@@ -1,0 +1,240 @@
+Infix To Postfix complete code
+========================================================
+
+#include <iostream>
+using namespace std;
+
+
+// this class is  maintaining my whole stack
+
+
+class myStack{
+        public:
+        char* vStack = new char[150];
+        int top = -1;
+        void sPush(char pushed){
+            if(top == -1){
+                top++;
+                vStack[top] = pushed;
+            }
+            else{
+                top++;
+                vStack[top] =pushed; 
+            }
+            
+        }
+        char pop(){
+            if(top == -1){
+                cout<<"No element to pop";
+            }
+            else{
+                char poppedElement = vStack[top];
+                top--;
+                return poppedElement;
+            }
+                
+        }
+        
+        void printStack(){
+            if(top == -1){
+                cout<< "no to display";
+            }
+            else
+            {
+             int iterator = top+1;
+              for (int  i =0;i<iterator;i++){
+                  cout<<vStack[i]<<endl;
+              }
+                
+            }
+            
+            
+        }
+            
+  };
+    
+class operations{
+    public:
+    int precedenceChecker(char operator1){
+        if(operator1 == '('){
+            return 5;
+        }
+        else if(operator1 == '^'){
+            return 4;
+        }
+        else if(operator1 == '/' || operator1 == '*'){
+            return 3;
+        }
+        else if(operator1 == '+' || operator1 == '-'){
+            return 2;
+        }
+        else{
+            return 0;
+        }
+        
+    }
+    
+    int operandsOperations(int operand1,int operand2,char operator1){
+        int result=0;
+        switch(operator1){
+            case '+':
+                result = operand1+operand2;
+                break;
+            case '-':
+                result = operand1 - operand2;
+                break;
+            case '*':
+                result = operand1 * operand2;
+                break;
+            case '/':
+                result =operand1 / operand2;
+                break;
+        }
+        return result;
+    }
+};
+
+class userInputProcessing {
+    public:
+    string expression;
+    char* expressionArray = new char[100];
+    void userInput(){
+    cout<<"Please enter expression you want to solve"<<endl;
+    cin>>expression;
+    
+    }
+    char* inputToExpression(){
+        int iterations = expression.length();
+        for (int i=0;i<iterations;i++){
+            expressionArray[i] = expression[i];
+        }
+        return expressionArray;
+    }
+    
+    void printExpressionArray(){
+        int iterations = expression.length();
+        for (int i = 0;i<iterations;i++){
+            cout<<expressionArray[i]<<endl;
+        }
+    }
+};
+
+class infixToPostfixConversion{
+    public:
+    //contructor
+    char* userInputArray;
+    infixToPostfixConversion(char* inputArrayAddrress){
+        userInputArray = inputArrayAddrress;
+        // cout<<userInputArray[0]<<endl;
+        postfixOperation();
+    }
+    
+    
+    void postfixOperation(){
+        
+        myStack ms;
+        operations op;
+        char* postFixExpression = new char[150];
+        //sPush,pop
+        //operations precedenceChecker
+        int i = 0;
+        bool errorExpression =false;
+        while(userInputArray[i]!=NULL){
+            if(userInputArray[i] =='(' || userInputArray[i] =='^' || userInputArray[i] =='/' || userInputArray[i] =='*' || userInputArray[i] =='+' || userInputArray[i] =='-'||userInputArray[i] ==')'){
+                if(ms.top == -1){
+                    ms.sPush(userInputArray[i]);
+                }
+                else{
+                    while(true){
+                        if(userInputArray[i] ==')'){
+                            int iterator = 0;
+                        while (postFixExpression[iterator] != NULL){
+                                iterator++;
+                            }
+                            while(ms.vStack[ms.top] !='('){
+                                postFixExpression[iterator] = ms.pop();
+                                iterator++;
+                                
+                            }
+                            ms.pop();
+                            break;
+                            
+                        }
+                        char topOperator = ms.vStack[ms.top];
+                        int precedence1 = op.precedenceChecker(userInputArray[i]);
+                        int precedence2 = op.precedenceChecker(topOperator);
+                        
+                        if(precedence1>precedence2){
+                            ms.sPush(userInputArray[i]);
+                            break;
+                        }
+                        else if(topOperator == '('){
+                            ms.sPush(userInputArray[i]);
+                            break;
+                        }
+                        else{
+                            int iterator = 0;
+                        while (postFixExpression[iterator] != NULL){
+                                iterator++;
+                            }
+                            
+                            postFixExpression[iterator] = ms.pop();
+                            
+                    }
+                    }
+                    
+                    
+                }
+            }
+            else{
+                int iterator = 0;
+                while (postFixExpression[iterator] != NULL){
+                        iterator++;
+                }
+                postFixExpression[iterator] = userInputArray[i] ;
+            
+                
+            }
+            i++;
+        }
+        if(ms.top!=-1){
+            
+            int iterator = 0;
+            while (postFixExpression[iterator] != NULL){
+                iterator++;
+            }
+            while(ms.top!=-1){
+                postFixExpression[iterator] = ms.pop();
+                iterator++;
+            }
+            
+        }
+        
+        int iterator = 0;
+        while(postFixExpression[iterator] !=NULL){
+            
+            cout<<postFixExpression[iterator];
+            iterator++;
+            
+        }
+        
+        
+        
+    }
+    
+    
+};
+
+int main() {
+    
+    userInputProcessing userInput1;
+
+    userInput1.userInput();
+    char* arayAddress =userInput1.inputToExpression();
+    //cout<<arayAddress[1];
+    infixToPostfixConversion itpc(arayAddress);
+    
+    
+
+    return 0;
+}
